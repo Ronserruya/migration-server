@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+kin-sdk = "==2.2.0"
+flask = "==1.0.2"
+flask-cors = "==3.0.7"
+datadog = "==0.26.0"
+flask-log-request-id = "==0.10.0"
+gunicorn = "==19.9.0"
+
+[dev-packages]
+pytest = "*"
+ipython = "*"
+
+[requires]
+python_version = "3.7"

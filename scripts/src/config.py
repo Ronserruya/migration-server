@@ -19,6 +19,7 @@ if DEBUG == 'TRUE':
     MAIN_SEED = 'SDBDJVXHPVQGDXYHEVOBBV4XZUDD7IQTXM5XHZRLXRJVY5YMH4YUCNZC'
     CHANNEL_SALT = 'local'
     CHANNEL_COUNT = 10
+    KIN_ISSUER = 'fill this later'
     OLD_HORIZON = 'http://localhost:8000'
     NEW_HORIZON = 'http://localhost:8002'
     NEW_PASSPHRASE = 'private testnet'
@@ -29,6 +30,7 @@ else:
     MAIN_SEED = os.environ['MAIN_SEED']
     CHANNEL_SALT = get_instance_id()
     CHANNEL_COUNT = os.environ['CHANNEL_COUNT']
+    KIN_ISSUER = os.environ['KIN_ISSUER']
     OLD_HORIZON = os.environ['OLD_HORIZON']
     NEW_HORIZON = os.environ['NEW_HORIZON']
     NEW_PASSPHRASE = os.environ['NEW_PASSPHRASE']

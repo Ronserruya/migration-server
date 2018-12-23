@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-kin-sdk = "==2.2.0"
+kin-sdk = "==2.2.3"
 flask = "==1.0.2"
 flask-cors = "==3.0.7"
 datadog = "==0.26.0"

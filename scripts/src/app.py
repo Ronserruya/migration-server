@@ -9,7 +9,7 @@ import kin.errors as KinErrors
 from kin.blockchain.utils import is_valid_address
 
 from init import app, statsd, old_client, main_account
-from config import KIN_ISSUER
+from config import KIN_ISSUER, DEBUG
 import errors as MigrationErrors
 from helpers import (get_proxy_address,
                      get_old_balance,
@@ -121,4 +121,5 @@ def error_handle(exception: Exception):
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0',port=3003 )
+    if DEBUG:
+        app.run('0.0.0.0', port=8000)

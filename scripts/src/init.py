@@ -43,7 +43,7 @@ kin_logger = logging.getLogger('kin')
 kin_logger.setLevel('ERROR')
 
 # Setup DogStatsd
-statsd = DogStatsd(host=config.STATSD_HOST, port=config.STATSD_PORT)
+statsd = DogStatsd(host=config.STATSD_HOST, port=config.STATSD_PORT, namespace='migration')
 
 # Setup kin
 # Passphrase is not needed for the old environment since we don't send any txs to it

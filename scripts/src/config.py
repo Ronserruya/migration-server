@@ -16,13 +16,13 @@ DEBUG = os.environ.get('DEBUG', 'TRUE')
 
 # Can get bool from env variable, need to check the string
 if DEBUG == 'TRUE':
-    MAIN_SEED = 'SDBDJVXHPVQGDXYHEVOBBV4XZUDD7IQTXM5XHZRLXRJVY5YMH4YUCNZC'
+    MAIN_SEED = 'SCOMIY6IHXNIL6ZFTBBYDLU65VONYWI3Y6EN4IDWDP2IIYTCYZBCCE6C'
     CHANNEL_SALT = 'local'
     CHANNEL_COUNT = 10
-    KIN_ISSUER = 'fill this later'
-    OLD_HORIZON = 'http://localhost:8000'
-    NEW_HORIZON = 'http://localhost:8002'
-    NEW_PASSPHRASE = 'private testnet'
+    KIN_ISSUER = 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
+    OLD_HORIZON = 'https://horizon-playground.kininfrastructure.com'
+    NEW_HORIZON = 'https://horizon-testnet.kininfrastructure.com'
+    NEW_PASSPHRASE = 'Kin Testnet ; December 2018'
     APP_ID = ANON_APP_ID
     STATSD_HOST = 'localhost'
     STATSD_PORT = 8125

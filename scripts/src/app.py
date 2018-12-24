@@ -4,6 +4,7 @@ import time
 import logging
 
 import flask
+from werkzeug.exceptions import HTTPException
 from kin.transactions import build_memo
 import kin.errors as KinErrors
 from kin.blockchain.utils import is_valid_address
@@ -108,13 +109,22 @@ def after_request(response):
     return response
 
 
+@app.errorhandler(MigrationErrors.MigrationError)
+def migration_error_handle(exception: MigrationErrors.MigrationError):
+    # If it is one of our custom errors, log and report it to statsd
+    statsd.increment(exception.statsd_metric)
+    logger.error(exception.error)
+    return flask.jsonify(exception.to_dict()), exception.http_code
+
+
+@app.errorhandler(HTTPException)
+def http_error_handler(exception: HTTPException):
+    logger.error(f'Http exception: {exception.__repr__()}')
+    return flask.jsonify({'code': exception.code, 'message': exception.__str__()})
+
+
 @app.errorhandler(Exception)
 def error_handle(exception: Exception):
-    if issubclass(exception.__class__, MigrationErrors.MigrationError):
-        # If it is one of our custom errors, log and report it to statsd
-        statsd.increment(exception.statsd_metric)
-        logger.error(exception.error)
-        return flask.jsonify(exception.to_dict()), exception.http_code
     # Log the exception and return an internal server error
     logger.error(f'Unexpected exception: {str(exception)}')
     return flask.jsonify(MigrationErrors.InternalError().to_dict()), 500

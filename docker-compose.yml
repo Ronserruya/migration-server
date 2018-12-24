@@ -2,7 +2,7 @@ version: '3'
 
 services:
   migration-server:
-    image: kinecosystem/migration-server:231218
+    image: kinecosystem/migration-server:241218
     network_mode: host # To connect to datadog agent
     environment:
       MAIN_SEED : 
@@ -14,3 +14,4 @@ services:
       APP_ID : 'mgsr'
       STATSD_HOST : 'localhost'
       STATSD_PORT : 8125
+      DEBUG: 'FALSE'

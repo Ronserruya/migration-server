@@ -120,7 +120,7 @@ def migration_error_handle(exception: MigrationErrors.MigrationError):
 @app.errorhandler(HTTPException)
 def http_error_handler(exception: HTTPException):
     logger.error(f'Http exception: {exception.__repr__()}')
-    return flask.jsonify({'code': exception.code, 'message': exception.__str__()})
+    return flask.jsonify({'code': exception.code, 'message': exception.__str__()}), exception.code
 
 
 @app.errorhandler(Exception)

@@ -1,0 +1,71 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://horizon-playground.kininfrastructure.com/accounts/GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V"
+    },
+    "transactions": {
+      "href": "https://horizon-playground.kininfrastructure.com/accounts/GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V/transactions{?cursor,limit,order}",
+      "templated": true
+    },
+    "operations": {
+      "href": "https://horizon-playground.kininfrastructure.com/accounts/GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V/operations{?cursor,limit,order}",
+      "templated": true
+    },
+    "payments": {
+      "href": "https://horizon-playground.kininfrastructure.com/accounts/GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V/payments{?cursor,limit,order}",
+      "templated": true
+    },
+    "effects": {
+      "href": "https://horizon-playground.kininfrastructure.com/accounts/GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V/effects{?cursor,limit,order}",
+      "templated": true
+    },
+    "offers": {
+      "href": "https://horizon-playground.kininfrastructure.com/accounts/GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V/offers{?cursor,limit,order}",
+      "templated": true
+    },
+    "trades": {
+      "href": "https://horizon-playground.kininfrastructure.com/accounts/GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V/trades{?cursor,limit,order}",
+      "templated": true
+    },
+    "data": {
+      "href": "https://horizon-playground.kininfrastructure.com/accounts/GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V/data/{key}",
+      "templated": true
+    }
+  },
+  "id": "GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V",
+  "paging_token": "",
+  "account_id": "GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V",
+  "sequence": "13726573744095233",
+  "subentry_count": 1,
+  "thresholds": {
+    "low_threshold": 0,
+    "med_threshold": 0,
+    "high_threshold": 0
+  },
+  "flags": {
+    "auth_required": false,
+    "auth_revocable": false
+  },
+  "balances": [
+    {
+      "balance": "123.0000000",
+      "limit": "922337203685.4775807",
+      "asset_type": "credit_alphanum4",
+      "asset_code": "KIN",
+      "asset_issuer": "GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7"
+    },
+    {
+      "balance": "99.9999900",
+      "asset_type": "native"
+    }
+  ],
+  "signers": [
+    {
+      "public_key": "GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V",
+      "weight": 1,
+      "key": "GAZKDZNF65HI33IKGBQKS22MWLHTO4WYPMHTMTZLNGKZC2BFRGWZ674V",
+      "type": "ed25519_public_key"
+    }
+  ],
+  "data": {}
+}

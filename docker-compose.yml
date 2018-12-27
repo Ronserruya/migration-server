@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  migration-server:
+    image: kinecosystem/migration-server:251218
+    network_mode: host # To connect to datadog agent
+    environment:
+      MAIN_SEED : 
+      CHANNEL_COUNT : 50
+      KIN_ISSUER : 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
+      OLD_HORIZON : 'http://horizon-ecosystem.kininfrastructure.com'
+      NEW_HORIZON : ''
+      NEW_PASSPHRASE : ''
+      APP_ID : 'mgsr'
+      STATSD_HOST : 'localhost'
+      STATSD_PORT : 8125
+      DEBUG: 'FALSE'

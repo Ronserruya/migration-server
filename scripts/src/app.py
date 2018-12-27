@@ -5,25 +5,28 @@ import logging
 
 import flask
 from werkzeug.exceptions import HTTPException
-from kin.transactions import build_memo
+
 import kin.errors as KinErrors
+from kin.transactions import build_memo
 from kin.blockchain.utils import is_valid_address
 
+import errors as MigrationErrors
 from init import app, statsd, old_client, main_account
 from config import KIN_ISSUER, DEBUG
-import errors as MigrationErrors
 from helpers import (get_proxy_address,
                      get_old_balance,
                      sign_tx,
                      build_migration_transaction,
                      build_create_transaction,
-                     verify_burn)
+                     is_burned)
 
 logger = logging.getLogger('migration')
+HTTP_STATUS_OK = 200
+HTTP_STATUS_INTERNAL_ERROR = 500
 
 
 @app.before_request
-def before_request():
+def set_start_time():
     # Add starting time
     flask.g.start_time = time.time()
 
@@ -36,15 +39,13 @@ def migrate():
     if not is_valid_address(client_address):
         raise MigrationErrors.AddressInvalidError(client_address)
 
-    # Verify the client's burn
     try:
         account_data = old_client.get_account_data(client_address)
     except KinErrors.AccountNotFoundError:
         raise MigrationErrors.AccountNotFoundError(client_address)
 
-    try:
-        verify_burn(account_data)
-    except AssertionError:
+    # Verify the client's burn
+    if not is_burned(account_data):
         raise MigrationErrors.AccountNotBurnedError(client_address)
     logger.info(f'Verified that account {client_address} is burned')
 
@@ -79,14 +80,18 @@ def migrate():
             logger.info(f'Address: {client_address}, was not pre-created, creating now')
             build_create_transaction(builder, proxy_address, client_address, old_balance)
             sign_tx(builder, channel, main_account.keypair.secret_seed)
-            tx_hash = main_account.submit_transaction(builder)
+            try:
+                tx_hash = main_account.submit_transaction(builder)
+            except KinErrors.AccountExistsError:
+                # Race condition, the client sent two migration requests at once, one of them finished first
+                raise MigrationErrors.AlreadyMigratedError(client_address)
 
         logger.info(f'Successfully migrated address: {client_address} with {old_balance} balance, tx: {tx_hash}')
         statsd.increment('accounts_migrated')
         if old_balance > 0:
             statsd.increment('kin_migrated', value=old_balance)
 
-    return flask.jsonify({'code': 200, 'message': 'OK'}), 200
+    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK'}), HTTP_STATUS_OK
 
 
 @app.route('/status', methods=['GET'])
@@ -97,11 +102,11 @@ def status():
     statsd.gauge('wallet_balance', account_status['balance'])
     statsd.gauge('total_channels', account_status['channels']['total_channels'])
     statsd.gauge('free_channels', account_status['channels']['free_channels'])
-    return flask.jsonify(account_status), 200
+    return flask.jsonify(account_status), HTTP_STATUS_OK
 
 
 @app.after_request
-def after_request(response):
+def log_and_report_metrics(response):
     # Log request response time
     response_time = time.time() - flask.g.start_time
     statsd.histogram('response_time', response_time, tags=[f'path:{flask.request.path}'])
@@ -119,7 +124,7 @@ def migration_error_handle(exception: MigrationErrors.MigrationError):
 
 @app.errorhandler(HTTPException)
 def http_error_handler(exception: HTTPException):
-    logger.error(f'Http exception: {exception.__repr__()}')
+    logger.error(f'Http exception: {repr(exception)}')
     return flask.jsonify({'code': exception.code, 'message': exception.__str__()}), exception.code
 
 
@@ -127,7 +132,7 @@ def http_error_handler(exception: HTTPException):
 def error_handle(exception: Exception):
     # Log the exception and return an internal server error
     logger.error(f'Unexpected exception: {str(exception)}')
-    return flask.jsonify(MigrationErrors.InternalError().to_dict()), 500
+    return flask.jsonify(MigrationErrors.InternalError().to_dict()), HTTP_STATUS_INTERNAL_ERROR
 
 
 if __name__ == '__main__':

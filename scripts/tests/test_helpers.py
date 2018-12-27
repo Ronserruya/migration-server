@@ -2,9 +2,9 @@ import pytest
 import json
 
 
-def test_verify_burn():
+def test_is_burned():
     from kin.blockchain.horizon_models import AccountData
-    from src.helpers import verify_burn
+    from src.helpers import is_burned
 
     with open('tests/not_burned_data') as f:
         not_burned_data = f.read()
@@ -12,10 +12,9 @@ def test_verify_burn():
     with open('tests/burned_data') as f:
         burned_data = f.read()
 
-    with pytest.raises(AssertionError):
-        verify_burn(AccountData(json.loads(not_burned_data), strict=False))
+    assert not is_burned(AccountData(json.loads(not_burned_data), strict=False))
 
-    verify_burn(AccountData(json.loads(burned_data), strict=False))
+    assert is_burned(AccountData(json.loads(burned_data), strict=False))
 
 
 def test_get_old_balance():

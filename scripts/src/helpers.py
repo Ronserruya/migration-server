@@ -6,13 +6,16 @@ from kin import Builder
 from kin.blockchain.horizon_models import AccountData
 from kin_base.keypair import Keypair as BaseKeypair
 
+KIN_ASSET_CODE = 'KIN'
 
-def verify_burn(account_data: AccountData):
+
+def is_burned(account_data: AccountData) -> bool:
     """Check that an account is burned"""
     # There are other ways to burn an account, but this is the way we do it
     # Only signer is the master signer, and its weight is 0
-    assert len(account_data.signers) == 1
-    assert account_data.signers[0].weight == 0
+    if len(account_data.signers) != 1 or account_data.signers[0].weight != 0:
+        return False
+    return True
 
 
 def get_proxy_address(address: str, salt: str) -> str:
@@ -26,7 +29,7 @@ def get_old_balance(account_data: AccountData, kin_issuer: str) -> float:
     """Get the balance the user had on the old blockchain"""
     old_balance = 0
     for balance in account_data.balances:
-        if balance.asset_code == 'KIN' and balance.asset_issuer == kin_issuer:
+        if balance.asset_code == KIN_ASSET_CODE and balance.asset_issuer == kin_issuer:
             old_balance = balance.balance
             break
 

@@ -64,8 +64,7 @@ def migrate():
     builder.add_text_memo(build_memo(main_account.app_id, None))
 
     # Build tx
-    build_migration_transaction(main_account.keypair.public_address,
-                                builder, proxy_address, client_address, old_balance)
+    build_migration_transaction(builder, proxy_address, client_address, old_balance)
     # Grab an available channel:
     with main_account.channel_manager.get_channel() as channel:
         sign_tx(builder, channel, main_account.keypair.secret_seed)
@@ -84,8 +83,7 @@ def migrate():
 
             # Add the memo manually because use the builder directly
             builder.add_text_memo(build_memo(main_account.app_id, None))
-            build_create_transaction(main_account.keypair.public_address,
-                                     builder, proxy_address, client_address, old_balance)
+            build_create_transaction(builder, proxy_address, client_address, old_balance)
             sign_tx(builder, channel, main_account.keypair.secret_seed)
             try:
                 tx_hash = main_account.submit_transaction(builder)

@@ -78,6 +78,11 @@ def migrate():
             # We expect most account to be created, so its better to "ask for forgiveness, not for permission"
             # The user's account was not pre-created on the new blockchain
             logger.info(f'Address: {client_address}, was not pre-created, creating now')
+            # Get tx builder, fee is 0 since we are whitelisted
+            builder = main_account.get_transaction_builder(0)
+
+            # Add the memo manually because use the builder directly
+            builder.add_text_memo(build_memo(main_account.app_id, None))
             build_create_transaction(builder, proxy_address, client_address, old_balance)
             sign_tx(builder, channel, main_account.keypair.secret_seed)
             try:

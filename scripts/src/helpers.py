@@ -42,12 +42,14 @@ def build_migration_transaction(builder: Builder, proxy_address: str,
 
     # First we create the proxy account, this will fail if the migration already happened
     builder.append_create_account_op(destination=proxy_address,
-                                     starting_balance=str(0))
+                                     starting_balance=str(0),
+                                     source=builder.address)
 
     if old_balance > 0:
         # Next we pay the kin to the client
         builder.append_payment_op(destination=client_address,
-                                  amount=str(old_balance))
+                                  amount=str(old_balance),
+                                  source=builder.address)
 
 
 def build_create_transaction(builder: Builder, proxy_address: str,
@@ -59,11 +61,13 @@ def build_create_transaction(builder: Builder, proxy_address: str,
 
     # First we create the proxy account, this will fail if the migration already happened
     builder.append_create_account_op(destination=proxy_address,
-                                     starting_balance=str(0))
+                                     starting_balance=str(0),
+                                     source=builder.address)
 
     # Next we create the client's account
     builder.append_create_account_op(destination=client_address,
-                                     starting_balance=str(old_balance))
+                                     starting_balance=str(old_balance),
+                                     source=builder.address)
 
 
 def sign_tx(builder: Builder, channel: str, seed: str):

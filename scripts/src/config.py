@@ -29,11 +29,11 @@ if DEBUG == 'TRUE':
 else:
     MAIN_SEED = os.environ['MAIN_SEED']
     CHANNEL_SALT = get_instance_id()
-    CHANNEL_COUNT = os.environ['CHANNEL_COUNT']
+    CHANNEL_COUNT = int(os.environ['CHANNEL_COUNT'])
     KIN_ISSUER = os.environ['KIN_ISSUER']
     OLD_HORIZON = os.environ['OLD_HORIZON']
     NEW_HORIZON = os.environ['NEW_HORIZON']
     NEW_PASSPHRASE = os.environ['NEW_PASSPHRASE']
     APP_ID = os.environ['APP_ID']
     STATSD_HOST = os.environ['STATSD_HOST']
-    STATSD_PORT = os.environ['STATSD_PORT']
+    STATSD_PORT = int(os.environ['STATSD_PORT'])

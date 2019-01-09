@@ -2,7 +2,7 @@ version: '3'
 
 services:
   migration-server:
-    image: kinecosystem/migration-server:251218
+    image: kinecosystem/migration-server:090119
     network_mode: host # To connect to datadog agent
     environment:
       MAIN_SEED : 

@@ -92,11 +92,12 @@ def migrate():
                 raise MigrationErrors.AlreadyMigratedError(client_address)
 
     # If the user had 0 kin, we didn't try to pay him, and might missed that he is not created
-    try:
-        main_account.create_account(client_address, starting_balance=0, fee=0)
-        logger.info(f'Address: {client_address}, was not pre-created, created now')
-    except KinErrors.AccountExistsError:
-        pass
+    if old_balance == 0:
+        try:
+            main_account.create_account(client_address, starting_balance=old_balance, fee=0)
+            logger.info(f'Address: {client_address}, was not pre-created, created now')
+        except KinErrors.AccountExistsError:
+            pass
 
     logger.info(f'Successfully migrated address: {client_address} with {old_balance} balance, tx: {tx_hash}')
     statsd.increment('accounts_migrated')

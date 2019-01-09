@@ -104,7 +104,7 @@ def migrate():
     if old_balance > 0:
         statsd.increment('kin_migrated', value=old_balance)
 
-    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK'}), HTTP_STATUS_OK
+    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': f'Balance: {old_balance}'}), HTTP_STATUS_OK
 
 
 @app.route('/status', methods=['GET'])

@@ -91,12 +91,20 @@ def migrate():
                 # Race condition, the client sent two migration requests at once, one of them finished first
                 raise MigrationErrors.AlreadyMigratedError(client_address)
 
-        logger.info(f'Successfully migrated address: {client_address} with {old_balance} balance, tx: {tx_hash}')
-        statsd.increment('accounts_migrated')
-        if old_balance > 0:
-            statsd.increment('kin_migrated', value=old_balance)
+    # If the user had 0 kin, we didn't try to pay him, and might missed that he is not created
+    if old_balance == 0:
+        try:
+            main_account.create_account(client_address, starting_balance=old_balance, fee=0)
+            logger.info(f'Address: {client_address}, was not pre-created, created now')
+        except KinErrors.AccountExistsError:
+            pass
 
-    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK'}), HTTP_STATUS_OK
+    logger.info(f'Successfully migrated address: {client_address} with {old_balance} balance, tx: {tx_hash}')
+    statsd.increment('accounts_migrated')
+    if old_balance > 0:
+        statsd.increment('kin_migrated', value=old_balance)
+
+    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': old_balance }), HTTP_STATUS_OK
 
 
 @app.route('/status', methods=['GET'])

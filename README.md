@@ -59,7 +59,8 @@ $ docker-compose logs
 ```json
 {
   "code": 200,
-  "message": "OK"
+  "message": "OK",
+  "balance: <balance sent to migrated account>"
 }
 ```
 

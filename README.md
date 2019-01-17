@@ -40,7 +40,7 @@ $ docker-compose logs
 
 **When running with 'DEBUG'='FALSE', the server is excpecting to run on an amazon ec2 instance**
 
-## External API
+## External API (Test host: https://migration-devplatform-playground.developers.kinecosystem.com)
 
 
 **GET '/status'**

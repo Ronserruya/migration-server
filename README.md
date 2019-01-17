@@ -1,6 +1,9 @@
 # Migration-server
 A server that is used to migrate a user from the old kin blockchain to the new one
 
+# View test blockchain activity
+https://kin3test.kinexplorer.com/
+
 ## Prerequisites
 * Docker
 * docker-compose

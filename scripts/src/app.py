@@ -12,7 +12,7 @@ from kin.blockchain.utils import is_valid_address
 
 import errors as MigrationErrors
 from init import app, statsd, old_client, main_account
-from config import KIN_ISSUER, DEBUG
+from config import KIN_ISSUER, DEBUG, PROXY_SALT
 from helpers import (get_proxy_address,
                      get_old_balance,
                      sign_tx,
@@ -54,7 +54,7 @@ def migrate():
     logger.info(f'Account {client_address} had {old_balance} kin')
 
     # Generate the keypair for the proxy account
-    proxy_address = get_proxy_address(client_address, main_account.keypair.secret_seed)
+    proxy_address = get_proxy_address(client_address, PROXY_SALT)
     logger.info(f'Generated proxy account with address: {proxy_address}')
 
     # Get tx builder, fee is 0 since we are whitelisted

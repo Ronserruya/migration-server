@@ -13,6 +13,7 @@ The server can be configured from the docker-compose.yml file
 |          Variable          | Description                                                                                                                                                                                                                     |
 |:--------------------------:|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | MAIN_SEED          | The seed of the account that will fund/create new accounts                                                                                                                                                                                      |
+| PROXY_SALT          | A string that is used when checking if an account was already migrated|
 | CHANNEL_COUNT            | Number of channels that will be used                                                                                                                                                                                                                                                                                                                                                                                       |
 | KIN_ISSUER                 | Issuer of the kin asset on the old blockchain                                                                                                                                                                                                 |
 | OLD_HORIZON                 | URL of horizon for the old blockchain|
@@ -35,7 +36,7 @@ Logs can be accessed with
 $ docker-compose logs
 ```
 
-**When running with 'DEBUG'='FALSE', the server is excpecting to run on an amazon ec2 instance**
+**When running with 'DEBUG'='FALSE', the server is expecting to run on an amazon ec2 instance**
 
 ## External API
 

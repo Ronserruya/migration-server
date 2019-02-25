@@ -17,6 +17,7 @@ DEBUG = os.environ.get('DEBUG', 'TRUE')
 # Can get bool from env variable, need to check the string
 if DEBUG == 'TRUE':
     MAIN_SEED = 'SCOMIY6IHXNIL6ZFTBBYDLU65VONYWI3Y6EN4IDWDP2IIYTCYZBCCE6C'
+    PROXY_SALT = 'pizza'
     CHANNEL_SALT = 'local'
     CHANNEL_COUNT = 10
     KIN_ISSUER = 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
@@ -28,6 +29,7 @@ if DEBUG == 'TRUE':
     STATSD_PORT = 8125
 else:
     MAIN_SEED = os.environ['MAIN_SEED']
+    PROXY_SALT = os.environ['PROXY_SALT']
     CHANNEL_SALT = get_instance_id()
     CHANNEL_COUNT = int(os.environ['CHANNEL_COUNT'])
     KIN_ISSUER = os.environ['KIN_ISSUER']

@@ -1,6 +1,9 @@
 # Migration-server
 A server that is used to migrate a user from the old kin blockchain to the new one
 
+# View test blockchain activity
+https://kin3test.kinexplorer.com/
+
 ## Prerequisites
 * Docker
 * docker-compose
@@ -38,7 +41,7 @@ $ docker-compose logs
 
 **When running with 'DEBUG'='FALSE', the server is expecting to run on an amazon ec2 instance**
 
-## External API
+## External API (Test host: https://migration-devplatform-playground.developers.kinecosystem.com)
 
 
 **GET '/status'**

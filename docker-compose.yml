@@ -2,10 +2,11 @@ version: '3'
 
 services:
   migration-server:
-    image: kinecosystem/migration-server:100119
+    image: kinecosystem/migration-server:250219
     network_mode: host # To connect to datadog agent
     environment:
-      MAIN_SEED : 
+      MAIN_SEED :
+      PROXY_SALT : ''
       CHANNEL_COUNT : 50
       KIN_ISSUER : 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
       OLD_HORIZON : 'http://horizon-ecosystem.kininfrastructure.com'

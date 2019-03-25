@@ -30,7 +30,7 @@ def set_start_time():
     flask.g.start_time = time.time()
 
 
-@app.route('/account/<account_address>/status', methods=['GET'])
+@app.route('/accounts/<account_address>/status', methods=['GET'])
 def account_status(account_address):
     return flask.jsonify({
         'migrate': True

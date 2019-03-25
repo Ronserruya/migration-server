@@ -2,7 +2,7 @@
 
 import logging
 from hashlib import sha256
-import errors as MigrationErrors
+from . import errors as MigrationErrors
 
 from kin import Builder
 from kin.blockchain.horizon_models import AccountData

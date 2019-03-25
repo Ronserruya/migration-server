@@ -2,7 +2,7 @@
 
 import logging
 from hashlib import sha256
-from . import errors as MigrationErrors
+import errors as MigrationErrors
 
 from kin import Builder
 from kin.blockchain.horizon_models import AccountData
@@ -10,7 +10,7 @@ from kin_base.keypair import Keypair as BaseKeypair
 from kin.blockchain.utils import is_valid_address
 import kin.errors as KinErrors
 
-from .init import old_client
+from init import old_client
 
 KIN_ASSET_CODE = 'KIN'
 

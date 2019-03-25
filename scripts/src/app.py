@@ -9,10 +9,10 @@ from werkzeug.exceptions import HTTPException
 import kin.errors as KinErrors
 from kin.transactions import build_memo
 
-from . import errors as MigrationErrors
-from .init import app, statsd, main_account
-from .config import KIN_ISSUER, DEBUG, PROXY_SALT
-from .helpers import (get_proxy_address,
+import errors as MigrationErrors
+from init import app, statsd, main_account
+from config import KIN_ISSUER, DEBUG, PROXY_SALT
+from helpers import (get_proxy_address,
                       get_old_balance,
                       sign_tx,
                       build_migration_transaction,
@@ -30,7 +30,7 @@ def set_start_time():
     flask.g.start_time = time.time()
 
 
-@app.route('/account/<account_address>/status', method=['GET'])
+@app.route('/account/<account_address>/status', methods=['GET'])
 def account_status(account_address):
     return flask.jsonify({
         'migrate': True

@@ -33,7 +33,7 @@ def set_start_time():
 @app.route('/accounts/<account_address>/status', methods=['GET'])
 def account_status(account_address):
     return flask.jsonify({
-        'migrate': True
+        'is_burned': is_burned(account_address)
     }), HTTP_STATUS_OK
 
 

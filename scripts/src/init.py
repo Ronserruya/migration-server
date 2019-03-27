@@ -13,7 +13,7 @@ import flask
 from flask_cors import CORS
 from datadog import DogStatsd
 
-import config
+from . import config
 
 
 def req_id_generator() -> str:

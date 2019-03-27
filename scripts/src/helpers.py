@@ -2,7 +2,7 @@
 
 import logging
 from hashlib import sha256
-import errors as MigrationErrors
+from . import errors as MigrationErrors
 
 from kin import Builder
 from kin.blockchain.horizon_models import AccountData
@@ -10,7 +10,7 @@ from kin_base.keypair import Keypair as BaseKeypair
 from kin.blockchain.utils import is_valid_address
 import kin.errors as KinErrors
 
-from init import old_client
+from .init import old_client
 
 KIN_ASSET_CODE = 'KIN'
 
@@ -28,7 +28,6 @@ def is_burned(account_address: str) -> bool:
     # There are other ways to burn an account, but this is the way we do it
     # Only signer is the master signer, and its weight is 0
 
-    logger.info(f'Received migration request for address: {account_address}')
     # Verify the client's address
     if not is_valid_address(account_address):
         raise MigrationErrors.AddressInvalidError(account_address)

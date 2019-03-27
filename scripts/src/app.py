@@ -9,10 +9,10 @@ from werkzeug.exceptions import HTTPException
 import kin.errors as KinErrors
 from kin.transactions import build_memo
 
-import errors as MigrationErrors
-from init import app, statsd, main_account
-from config import KIN_ISSUER, DEBUG, PROXY_SALT
-from helpers import (get_proxy_address,
+from . import errors as MigrationErrors
+from .init import app, statsd, main_account
+from .config import KIN_ISSUER, DEBUG, PROXY_SALT
+from .helpers import (get_proxy_address,
                       get_old_balance,
                       sign_tx,
                       build_migration_transaction,
@@ -32,6 +32,7 @@ def set_start_time():
 
 @app.route('/accounts/<account_address>/status', methods=['GET'])
 def account_status(account_address):
+    logger.info(f'Received an account status request for address: {account_address}')
     return flask.jsonify({
         'is_burned': is_burned(account_address)
     }), HTTP_STATUS_OK
@@ -40,6 +41,7 @@ def account_status(account_address):
 @app.route('/migrate', methods=['POST'])
 def migrate():
     account_address = flask.request.args.get('address', '')
+    logger.info(f'Received migration request for address: {account_address}')
     # Verify the client's burn
     if not is_burned(account_address):
         raise MigrationErrors.AccountNotBurnedError(account_address)

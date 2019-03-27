@@ -4,8 +4,7 @@ services:
     migration-server:
         image: kinecosystem/migration-server:latest
         ports:
-            - 8000
-        network_mode: host # To connect to datadog agent
+          - "8000"
         environment:
             MAIN_SEED: 
             PROXY_SALT: ''

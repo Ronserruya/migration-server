@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 import json
 
 
@@ -12,9 +13,13 @@ def test_is_burned():
     with open('tests/burned_data') as f:
         burned_data = f.read()
 
-    assert not is_burned(AccountData(json.loads(not_burned_data), strict=False))
+    account = AccountData(json.loads(not_burned_data), strict=False)
+    with patch('src.helpers.get_account_data', lambda x: account):
+        assert not is_burned(account.account_id)
 
-    assert is_burned(AccountData(json.loads(burned_data), strict=False))
+    account = AccountData(json.loads(burned_data), strict=False)
+    with patch('src.helpers.get_account_data', lambda x: account):
+        assert is_burned(account.account_id)
 
 
 def test_get_old_balance():

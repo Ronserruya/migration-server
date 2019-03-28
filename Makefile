@@ -16,3 +16,6 @@ push-image:
 
 push-image-latest:
 	docker push ${image}:latest
+
+test:
+	pipenv run python -m pytest -v -rs -s -x --fulltrace --disable-warnings tests

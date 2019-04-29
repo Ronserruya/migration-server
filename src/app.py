@@ -137,14 +137,14 @@ def migration_error_handle(exception: MigrationErrors.MigrationError):
 
 @app.errorhandler(HTTPException)
 def http_error_handler(exception: HTTPException):
-    logger.error(f'Http exception: {repr(exception)}')
+    logger.exception(f'Http exception: {repr(exception)}')
     return flask.jsonify({'code': exception.code, 'message': exception.__str__()}), exception.code
 
 
 @app.errorhandler(Exception)
 def error_handle(exception: Exception):
     # Log the exception and return an internal server error
-    logger.error(f'Unexpected exception: {str(exception)}')
+    logger.exception(f'Unexpected exception: {str(exception)}')
     return flask.jsonify(MigrationErrors.InternalError().to_dict()), HTTP_STATUS_INTERNAL_ERROR
 
 

@@ -122,7 +122,8 @@ def status():
 def log_and_report_metrics(response):
     # Log request response time
     response_time = time.time() - flask.g.start_time
-    statsd.histogram('response_time', response_time, tags=[f'path:{flask.request.path}'])
+    path = flask.request.url_rule.rule if flask.request.url_rule else '404'
+    statsd.histogram('response_time', response_time, tags=[f'path:{path}'])
     logger.info(f'Finished handling request after {response_time} seconds')
     return response
 

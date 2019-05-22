@@ -13,7 +13,7 @@ services:
             OLD_HORIZON: 'http://horizon-ecosystem.kininfrastructure.com'
             NEW_HORIZON: 'http://horizon.kinfederation.com'
             NEW_PASSPHRASE: 'Kin Mainnet ; December 2018'
-            APP_INTERNAL_SERVICE: ''
+            APP_INTERNAL_SERVICE: 'http://marketplace-internal'
             APP_ID: 'mgsv'
             STATSD_HOST: 'localhost'
             STATSD_PORT: 8125

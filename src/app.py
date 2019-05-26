@@ -24,7 +24,7 @@ logger = logging.getLogger('migration')
 HTTP_STATUS_OK = 200
 HTTP_STATUS_INTERNAL_ERROR = 500
 
-BURN_WALLET_ADDRESS = f'{ APP_INTERNAL_SERVICE }/v1/internal/webhook'
+BURN_WALLET_ADDRESS = f'{ APP_INTERNAL_SERVICE }/v1/internal'
 
 @app.before_request
 def set_start_time():

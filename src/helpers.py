@@ -10,18 +10,27 @@ from kin_base.keypair import Keypair as BaseKeypair
 from kin.blockchain.utils import is_valid_address
 import kin.errors as KinErrors
 
-from .init import old_client
+from .init import old_client, new_client
 
 KIN_ASSET_CODE = 'KIN'
 
 logger = logging.getLogger('migration')
 
-def get_account_data(account_address):
+
+def get_kin2_account_data(account_address):
     try:
         account_data = old_client.get_account_data(account_address)
     except KinErrors.AccountNotFoundError:
         raise MigrationErrors.AccountNotFoundError(account_address)
     return account_data
+
+
+def get_kin3_account_data_or_none(account_address):
+    try:
+        return new_client.get_account_data(account_address)
+    except KinErrors.AccountNotFoundError:
+        return None
+
 
 def is_burned(account_address: str) -> bool:
     """Check that an account is burned"""
@@ -32,7 +41,7 @@ def is_burned(account_address: str) -> bool:
     if not is_valid_address(account_address):
         raise MigrationErrors.AddressInvalidError(account_address)
 
-    account_data = get_account_data(account_address)
+    account_data = get_kin2_account_data(account_address)
 
     if len(account_data.signers) != 1 or account_data.signers[0].weight != 0:
         return False

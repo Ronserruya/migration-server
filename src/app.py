@@ -23,6 +23,7 @@ from .helpers import (get_proxy_address,
 logger = logging.getLogger('migration')
 HTTP_STATUS_OK = 200
 HTTP_STATUS_INTERNAL_ERROR = 500
+print(APP_INTERNAL_SERVICE)
 BURN_WALLET_ADDRESS = f'{ APP_INTERNAL_SERVICE }/v1/internal/webhook'
 
 @app.before_request

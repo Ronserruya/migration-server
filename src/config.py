@@ -27,6 +27,7 @@ if DEBUG == 'TRUE':
     APP_ID = ANON_APP_ID
     STATSD_HOST = 'localhost'
     STATSD_PORT = 8125
+    REDIS_CONN = os.environ['REDIS_CONN'] # in the form of redis://localhost:6379/0
 else:
     MAIN_SEED = os.environ['MAIN_SEED']
     PROXY_SALT = os.environ['PROXY_SALT']
@@ -39,3 +40,4 @@ else:
     APP_ID = os.environ['APP_ID']
     STATSD_HOST = os.environ['STATSD_HOST']
     STATSD_PORT = int(os.environ['STATSD_PORT'])
+    REDIS_CONN = os.environ['REDIS_CONN']

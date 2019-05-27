@@ -10,6 +10,7 @@ flask-cors = "==3.0.7"
 datadog = "==0.26.0"
 flask-log-request-id = "==0.10.0"
 gunicorn = "==19.9.0"
+redis = "*"
 
 [dev-packages]
 pytest = "*"

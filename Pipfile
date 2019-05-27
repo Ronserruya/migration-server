@@ -16,6 +16,7 @@ redis = "*"
 pytest = "*"
 fakeredis = "*"
 ipython = "*"
+six = "==1.12"
 
 [requires]
 python_version = "3.7"

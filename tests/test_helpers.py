@@ -54,8 +54,7 @@ def test_migrate_non_zero_with_account():
             with patch('src.migration.main_account.submit_transaction') as submit_transaction:
                 assert 7 == migrate(account)
                 builder = submit_transaction.call_args[0][0]
-                assert isinstance(builder.ops[0], CreateAccount)
-                assert isinstance(builder.ops[1], Payment)
+                assert isinstance(builder.ops[0], Payment)
 
 
 def test_migrate_non_zero_without_account():
@@ -68,7 +67,6 @@ def test_migrate_non_zero_without_account():
                 assert 7 == migrate(account)
                 builder = submit_transaction.call_args[0][0]
                 assert isinstance(builder.ops[0], CreateAccount)
-                assert isinstance(builder.ops[1], CreateAccount)
 
 
 def test_caching():
@@ -123,34 +121,23 @@ def test_get_old_balance():
     assert get_old_balance(AccountData(json.loads(with_kin_data), strict=False)) == 123
 
 
-def test_get_proxy_address():
-    from src.helpers import get_proxy_address
-
-    client_address = 'GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL'
-    salt = 'SCOMIY6IHXNIL6ZFTBBYDLU65VONYWI3Y6EN4IDWDP2IIYTCYZBCCE6C'
-    expected_proxy = 'GB3MH57M5JPLTPNIVW7BFKTMXSX3JJF4BRXK2R2XD7HBPZ5JMQLUDPSY'
-
-    assert get_proxy_address(client_address, salt) == expected_proxy
-
-
 def test_build_migration_transaction():
     from kin import Builder
     from src.helpers import build_migration_transaction
     client_address = 'GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL'
-    proxy_address = 'GB3MH57M5JPLTPNIVW7BFKTMXSX3JJF4BRXK2R2XD7HBPZ5JMQLUDPSY'
 
-    expected_hash = 'bdd602b552377f84b80ef34dea732be8094ba5eaf3cc45e7f8f22b1a26a32ed1'
+    expected_hash = '1ccc7b3dc25499894a52d814227697785f0308a3a6b3145b987b01ce633a9bbd'
     builder = Builder('TEST', '', 0, 'SCOMIY6IHXNIL6ZFTBBYDLU65VONYWI3Y6EN4IDWDP2IIYTCYZBCCE6C')
-    build_migration_transaction(builder, proxy_address, client_address, 0)
+    build_migration_transaction(builder, client_address, 0)
     # Client had no balance so we didnt need to pay him
     assert len(builder.ops) == 1
     assert builder.hash_hex() == expected_hash
 
-    expected_hash = '90034a54d814b781a555d29bb539f38779f43a6143cc1372893490eb325b42fc'
+    expected_hash = '6f7b15167783932c58c67b08f3011102b3ad00c84f61633092f2d4a862a3700b'
     builder = Builder('TEST', '', 0, 'SCOMIY6IHXNIL6ZFTBBYDLU65VONYWI3Y6EN4IDWDP2IIYTCYZBCCE6C')
-    build_migration_transaction(builder, proxy_address, client_address, 1)
+    build_migration_transaction(builder, client_address, 1)
     # Client had balance so we need to pay him
-    assert len(builder.ops) == 2
+    assert len(builder.ops) == 1
     assert builder.hash_hex() == expected_hash
 
 
@@ -158,9 +145,8 @@ def test_build_create_transaction():
     from kin import Builder
     from src.helpers import build_create_transaction
     client_address = 'GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL'
-    proxy_address = 'GB3MH57M5JPLTPNIVW7BFKTMXSX3JJF4BRXK2R2XD7HBPZ5JMQLUDPSY'
 
-    expected_hash = '8a38e61f07ef53a910e34e1d9a94402a534c2e1ba57f25f5a153accc63e9d570'
+    expected_hash = '52d6d97c4a1a3164d4a4c48ee8f49d87a0072a76ce19d84b360c56d106661e60'
     builder = Builder('TEST', '', 0, 'SCOMIY6IHXNIL6ZFTBBYDLU65VONYWI3Y6EN4IDWDP2IIYTCYZBCCE6C')
-    build_create_transaction(builder, proxy_address, client_address, 0)
+    build_create_transaction(builder, client_address, 0)
     assert builder.hash_hex() == expected_hash

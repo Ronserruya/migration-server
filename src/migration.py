@@ -86,10 +86,11 @@ def migrate(account_address):
         logger.info(f'Successfully migrated address: {account_address} with {old_balance} balance, tx: {tx_hash}')
         return 0
 
-    has_proxy = has_kin3_account(get_proxy_address(account_address))
+    proxy_address = get_proxy_address(account_address)
+    has_proxy = has_kin3_account(proxy_address)
     if has_proxy:  # skip funding
         statsd.increment('skip_funding', tags=[f'had_account:{has_kin3}'])  # should expect has_kin3 to always be true
-        logger.warning(f'skipping funding {account_address} due to proxy account existence')
+        logger.warning(f'skipping funding {account_address} due to proxy account {proxy_address} existence')
         raise MigrationErrors.AlreadyMigratedError(account_address)
 
     tx_hash = None

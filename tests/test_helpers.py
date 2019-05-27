@@ -42,7 +42,7 @@ def test_migrate_zero_without_account():
         with patch('src.migration.has_kin3_account', lambda x: False):
             with patch('src.migration.main_account.create_account') as create_account:
                 assert 0 == migrate(account)
-                create_account.assert_called_with(account, fee=0, starting_balance=0)
+                create_account.assert_called_with(account, fee=0, starting_balance=0, memo_text='1-anon-')
 
 
 def test_migrate_non_zero_with_account():
@@ -50,7 +50,7 @@ def test_migrate_non_zero_with_account():
 
     account = 'GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL'
     with patch('src.migration.get_burned_balance', lambda x: 7):
-        with patch('src.migration.has_kin3_account', lambda x: True):
+        with patch('src.migration.has_kin3_account', lambda x: x == account):
             with patch('src.migration.main_account.submit_transaction') as submit_transaction:
                 assert 7 == migrate(account)
                 builder = submit_transaction.call_args[0][0]

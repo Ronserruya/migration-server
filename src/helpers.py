@@ -9,7 +9,7 @@ from kin.blockchain.horizon_models import AccountData
 from kin_base.keypair import Keypair as BaseKeypair
 from kin.blockchain.utils import is_valid_address
 import kin.errors as KinErrors
-from .config import KIN_ISSUER
+from .config import KIN_ISSUER, PROXY_SALT
 from .init import old_client, new_client, cache
 
 KIN_ASSET_CODE = 'KIN'
@@ -117,3 +117,10 @@ def sign_tx(builder: Builder, channel: str, seed: str):
     builder.set_channel(channel)
     builder.sign(channel)
     builder.sign(seed)
+
+
+def get_proxy_address(address: str) -> str:
+    """Generate a deterministic keypair using an address and a salt"""
+    raw_seed = sha256((address + PROXY_SALT).encode()).digest()
+    keypair = BaseKeypair.from_raw_seed(raw_seed)
+    return keypair.address().decode()

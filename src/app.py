@@ -62,8 +62,13 @@ def migrate():
         # will throw LockError when failing to lock within blocking_timeout
         if cache.is_migrated(account_address):
             raise MigrationErrors.AlreadyMigratedError(account_address)
-        migrated_balance = migration.migrate(account_address)
-        cache.set_migrated(account_address)
+        try:
+            migrated_balance = migration.migrate(account_address)
+            cache.set_migrated(account_address)
+        except MigrationErrors.AlreadyMigratedError:
+            # mark in cache also in cases where migration happened already
+            cache.set_migrated(account_address)
+            raise  # re-raise error
 
     # calls marketplace-internal for updating wallet with created_date_kin3
     marking_as_burnt_address = f'{ INTERNAL_ADDRESS }/wallets/{ account_address }/burnt'

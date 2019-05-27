@@ -25,6 +25,7 @@ def test_is_burned():
 def test_get_old_balance():
     from kin.blockchain.horizon_models import AccountData
     from src.helpers import get_old_balance
+    from src import config
 
     with open('tests/no_kin_data') as f:
         no_kin_data = f.read()
@@ -32,10 +33,10 @@ def test_get_old_balance():
     with open('tests/with_kin_data') as f:
         with_kin_data = f.read()
 
-    KIN_ISSUER = 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
+    config.KIN_ISSUER = 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
 
-    assert get_old_balance(AccountData(json.loads(no_kin_data), strict=False), KIN_ISSUER) == 0
-    assert get_old_balance(AccountData(json.loads(with_kin_data), strict=False), KIN_ISSUER) == 123
+    assert get_old_balance(AccountData(json.loads(no_kin_data), strict=False)) == 0
+    assert get_old_balance(AccountData(json.loads(with_kin_data), strict=False)) == 123
 
 
 def test_get_proxy_address():

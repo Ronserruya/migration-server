@@ -60,14 +60,6 @@ def is_burned(account_data: AccountData) -> bool:
     cache.set_burned_balance(account_data.account_id, get_old_balance(account_data))
     return True
 
-
-def get_proxy_address(address: str, salt: str) -> str:
-    """Generate a deterministic keypair using an address and a salt"""
-    raw_seed = sha256((address + salt).encode()).digest()
-    keypair = BaseKeypair.from_raw_seed(raw_seed)
-    return keypair.address().decode()
-
-
 def get_old_balance(account_data: AccountData) -> float:
     """Get the balance the user had on the old blockchain"""
     old_balance = 0
@@ -97,34 +89,19 @@ def get_burned_balance(account_address):
     return old_balance
 
 
-def build_migration_transaction(builder: Builder, proxy_address: str,
-                                client_address: str, old_balance: float):
+def build_migration_transaction(builder: Builder, client_address: str, old_balance: float):
     """Builder a transaction that will migrate an account"""
-
-    # First we create the proxy account, this will fail if the migration already happened
-    builder.append_create_account_op(destination=proxy_address,
-                                     starting_balance=str(0),
-                                     source=builder.address)
-
-    if old_balance > 0:
-        # Next we pay the kin to the client
-        builder.append_payment_op(destination=client_address,
-                                  amount=str(old_balance),
-                                  source=builder.address)
+    # Next we pay the kin to the client
+    builder.append_payment_op(destination=client_address,
+                              amount=str(old_balance),
+                              source=builder.address)
 
 
-def build_create_transaction(builder: Builder, proxy_address: str,
-                             client_address: str, old_balance: float):
+def build_create_transaction(builder: Builder, client_address: str, old_balance: float):
     """
     Build a transaction that will create the new account,
     in the rare case someone we didn't pre-create tries to migrate
     """
-
-    # First we create the proxy account, this will fail if the migration already happened
-    builder.append_create_account_op(destination=proxy_address,
-                                     starting_balance=str(0),
-                                     source=builder.address)
-
     # Next we create the client's account
     builder.append_create_account_op(destination=client_address,
                                      starting_balance=str(old_balance),

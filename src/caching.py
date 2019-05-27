@@ -13,7 +13,7 @@ class Cache:
         if balance is None:
             return None
 
-        return int(balance)
+        return float(balance)
 
     def set_burned_balance(self, account_address, balance):
         return self.redis_conn.set(f'burned_balance:{account_address}', balance)

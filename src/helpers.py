@@ -89,7 +89,7 @@ def get_burned_balance(account_address):
 
     old_balance = get_old_balance(kin2_account_data)
 
-    logger.info(f'Verified that account {account_address} is burned with {burned_balance}')
+    logger.info(f'Verified that account {account_address} is burned with {old_balance}')
     return old_balance
 
 

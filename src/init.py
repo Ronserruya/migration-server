@@ -61,5 +61,9 @@ logger.info(f'Initialized app with address: {main_account.keypair.public_address
             f'New horizon: {config.NEW_HORIZON}')
 
 
-redis_conn = redis.Redis(config.REDIS_CONN)
+if config.REDIS_CONN == 'fakeredis':
+    import fakeredis
+    redis_conn = fakeredis.FakeRedis()
+else:
+    redis_conn = redis.Redis(config.REDIS_CONN)
 cache = Cache(redis_conn)

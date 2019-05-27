@@ -1,10 +1,44 @@
 import pytest
 from unittest.mock import patch
 import json
+from kin.blockchain.horizon_models import AccountData
+
+
+def test_has_kin3_account():
+    import kin.errors as KinErrors
+    from src.helpers import has_kin3_account
+    from src.init import cache
+
+    with patch('src.helpers.new_client.get_account_data', lambda x: 'blah'):
+        assert has_kin3_account('GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL')
+    assert cache.has_kin3_account('GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL')
+
+    def raise_error(x):
+        raise KinErrors.AccountNotFoundError
+    with patch('src.helpers.new_client.get_account_data', raise_error):
+        assert not has_kin3_account('GB6Z32SPX4UAWCQ6ZD4N6IJOBAVXPEJ5ZFDTT6WL7MTXS54ZVK5WG6ZN')
+    assert not cache.has_kin3_account('GB6Z32SPX4UAWCQ6ZD4N6IJOBAVXPEJ5ZFDTT6WL7MTXS54ZVK5WG6ZN')
+
+
+def test_caching():
+    from src.init import cache
+    account = 'blah'
+    assert not cache.is_migrated(account)
+    cache.set_migrated(account)
+    assert cache.is_migrated(account)
+
+    assert cache.get_burned_balance(account) is None
+    cache.set_burned_balance(account, 7)
+    assert cache.get_burned_balance(account) == 7
+    cache.set_burned_balance(account, 0)
+    assert cache.get_burned_balance(account) == 0
+
+    assert not cache.has_kin3_account(account)
+    cache.set_has_kin3_account(account)
+    assert cache.has_kin3_account(account)
 
 
 def test_is_burned():
-    from kin.blockchain.horizon_models import AccountData
     from src.helpers import is_burned
 
     with open('tests/not_burned_data') as f:
@@ -14,16 +48,15 @@ def test_is_burned():
         burned_data = f.read()
 
     account = AccountData(json.loads(not_burned_data), strict=False)
-    with patch('src.helpers.get_account_data', lambda x: account):
-        assert not is_burned(account.account_id)
+    with patch('src.helpers.get_kin2_account_data', lambda x: account):
+        assert not is_burned(account)
 
     account = AccountData(json.loads(burned_data), strict=False)
-    with patch('src.helpers.get_account_data', lambda x: account):
-        assert is_burned(account.account_id)
+    with patch('src.helpers.get_kin2_account_data', lambda x: account):
+        assert is_burned(account)
 
 
 def test_get_old_balance():
-    from kin.blockchain.horizon_models import AccountData
     from src.helpers import get_old_balance
     from src import config
 

@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 import json
 from kin.blockchain.horizon_models import AccountData
+from kin_base.operation import CreateAccount, Payment
 
 
 def test_has_kin3_account():
@@ -18,6 +19,56 @@ def test_has_kin3_account():
     with patch('src.helpers.new_client.get_account_data', raise_error):
         assert not has_kin3_account('GB6Z32SPX4UAWCQ6ZD4N6IJOBAVXPEJ5ZFDTT6WL7MTXS54ZVK5WG6ZN')
     assert not cache.has_kin3_account('GB6Z32SPX4UAWCQ6ZD4N6IJOBAVXPEJ5ZFDTT6WL7MTXS54ZVK5WG6ZN')
+
+
+def test_migrate_zero_with_account():
+    from src.migration import migrate
+
+    account = 'GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL'
+    with patch('src.migration.get_burned_balance', lambda x: 0):
+        with patch('src.migration.has_kin3_account', lambda x: True):
+            with patch('src.migration.main_account.create_account') as create_account:
+                assert 0 == migrate(account)
+                create_account.assert_not_called()
+
+
+def test_migrate_zero_without_account():
+    # 3 migrate non zero with account
+    # 4 migrate non zero without account
+    from src.migration import migrate
+
+    account = 'GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL'
+    with patch('src.migration.get_burned_balance', lambda x: 0):
+        with patch('src.migration.has_kin3_account', lambda x: False):
+            with patch('src.migration.main_account.create_account') as create_account:
+                assert 0 == migrate(account)
+                create_account.assert_called_with(account, fee=0, starting_balance=0)
+
+
+def test_migrate_non_zero_with_account():
+    from src.migration import migrate
+
+    account = 'GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL'
+    with patch('src.migration.get_burned_balance', lambda x: 7):
+        with patch('src.migration.has_kin3_account', lambda x: True):
+            with patch('src.migration.main_account.submit_transaction') as submit_transaction:
+                assert 7 == migrate(account)
+                builder = submit_transaction.call_args[0][0]
+                assert isinstance(builder.ops[0], CreateAccount)
+                assert isinstance(builder.ops[1], Payment)
+
+
+def test_migrate_non_zero_without_account():
+    from src.migration import migrate
+
+    account = 'GC46XF47MU4NUBBSQJ4KZWLZLN37UECP2TI2IQRYLRUBNGMADHKZBFGL'
+    with patch('src.migration.get_burned_balance', lambda x: 7):
+        with patch('src.migration.has_kin3_account', lambda x: False):
+            with patch('src.migration.main_account.submit_transaction') as submit_transaction:
+                assert 7 == migrate(account)
+                builder = submit_transaction.call_args[0][0]
+                assert isinstance(builder.ops[0], CreateAccount)
+                assert isinstance(builder.ops[1], CreateAccount)
 
 
 def test_caching():

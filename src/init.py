@@ -65,5 +65,5 @@ if config.REDIS_CONN == 'fakeredis':
     import fakeredis
     redis_conn = fakeredis.FakeRedis()
 else:
-    redis_conn = redis.Redis(config.REDIS_CONN)
+    redis_conn = redis.Redis.from_url(config.REDIS_CONN)
 cache = Cache(redis_conn)

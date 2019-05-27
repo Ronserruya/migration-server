@@ -28,9 +28,14 @@ def set_start_time():
 def account_status(account_address):
     logger.info(f'Received an account status request for address: {account_address}')
 
-    kin2_account_data = get_kin2_account_data(account_address)
+    if cache.get_burned_balance(account_address) is not None:
+        burned = True
+    else:
+        kin2_account_data = get_kin2_account_data(account_address)
+        burned = is_burned(kin2_account_data)
+
     return flask.jsonify({
-        'is_burned': is_burned(kin2_account_data)
+        'is_burned': burned
     }), HTTP_STATUS_OK
 
 

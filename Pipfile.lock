@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d1c4a4ee70615b5693e8d07b14e77cdcc4c44f2b5b84fdd62fdb2a17c88b5e00"
+            "sha256": "2435a98e1075685c6506d8cc1c4e3f2f2b5c81e48a36ed322d73248f6a61cfa9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -244,11 +244,7 @@
             "version": "==2.0.1"
         },
         "six": {
-            "hashes": [
-                "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9",
-                "sha256:832dc0e10feb1aa2c68dcc57dbb658f1c7e65b9b61af69048abc87a2db00a0eb"
-            ],
-            "version": "==1.11.0"
+            "version": "==1.12.0"
         },
         "stellar-base-sseclient": {
             "hashes": [
@@ -427,11 +423,7 @@
             "version": "==3.2.1"
         },
         "six": {
-            "hashes": [
-                "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9",
-                "sha256:832dc0e10feb1aa2c68dcc57dbb658f1c7e65b9b61af69048abc87a2db00a0eb"
-            ],
-            "version": "==1.11.0"
+            "version": "==1.12.0"
         },
         "sortedcontainers": {
             "hashes": [

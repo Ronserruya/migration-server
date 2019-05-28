@@ -79,8 +79,10 @@ def migrate(account_address):
         if has_kin3:
             tx_hash = '<already exists>'
             logger.info(f'Address: {account_address}, was created for 0 balance account')
+            return None, None
         else:
-            tx_hash = migrate_zero_balance(account_address)
+            #tx_hash = migrate_zero_balance(account_address)
+            return 'create_account', 0
 
         statsd.increment('accounts_migrated', tags=[f'had_account:{has_kin3}', 'zero:true'])
         logger.info(f'Successfully migrated address: {account_address} with {old_balance} balance, tx: {tx_hash}')
@@ -95,10 +97,12 @@ def migrate(account_address):
 
     tx_hash = None
     if has_kin3:
-        tx_hash = migrate_balance(account_address, old_balance)
+        #tx_hash = migrate_balance(account_address, old_balance)
+        return 'payment', old_balance
 
     if not tx_hash:  # migration can fail if the wallet doesnt exist on kin3 for some reason
-        tx_hash = migrate_balance_and_create_account(account_address, old_balance)
+        #tx_hash = migrate_balance_and_create_account(account_address, old_balance)
+        return 'create_account', old_balance
 
     statsd.increment('accounts_migrated', tags=[f'had_account:{has_kin3}', 'zero:false'])
     logger.info(f'Successfully migrated address: {account_address} with {old_balance} balance, tx: {tx_hash}')

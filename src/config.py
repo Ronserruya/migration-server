@@ -27,7 +27,7 @@ if DEBUG == 'TRUE':
     APP_ID = ANON_APP_ID
     STATSD_HOST = 'localhost'
     STATSD_PORT = 8125
-    REDIS_CONN = 'fakeredis'
+    REDIS_CONN = 'redis://localhost:6379/0'
 else:
     MAIN_SEED = os.environ['MAIN_SEED']
     PROXY_SALT = os.environ['PROXY_SALT']

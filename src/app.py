@@ -11,6 +11,7 @@ from .init import app, statsd, main_account, redis_conn, cache
 from .config import KIN_ISSUER, DEBUG
 from .helpers import is_burned, get_kin2_account_data
 from . import migration
+import json
 
 
 logger = logging.getLogger('migration')
@@ -39,6 +40,52 @@ def account_status(account_address):
     }), HTTP_STATUS_OK
 
 
+def send_job_and_wait(account_address, action, balance):
+    pubsub = redis_conn.pubsub()
+    pubsub.subscribe(f'migrated:{account_address}')
+    redis_conn.lpush('migration_jobs', json.dumps(
+        {'account_address': account_address,
+         'action': action,
+         'balance': balance}))
+    message = pubsub.get_message(ignore_subscribe_messages=True, timeout=20)
+    pubsub.unsubscribe()
+    if message is not None:
+        raise Exception('failed to migrate on time')
+
+
+def worker(worker_id: str):
+    # get list of jobs
+    def get_jobs():
+        job_list = []
+        start_time = time.time()
+        while len(job_list) < 100 and (time.time() - start_time < 2 or len(job_list) == 0):
+            job = redis_conn.rpop('migration_jobs')
+            if job is not None:
+                job_list.append(json.loads(job))
+        return job_list
+
+    jobs = get_jobs()
+    builder = kin.Builder()
+    for job in jobs:
+        if job.action == 'payment':
+            builder.add_operation(Payment(job.account_address, job.balance))
+        elif job.action == 'create_account':
+            builder.add_operation(CreateAccount(job.account_address, job.balance))
+    builder.sign()
+    with kin.get_channel() as channel:
+        try:
+            kin.send_transaction(channel, builder.gen_tx())
+        except:
+            # failed to created
+            # try to send separately
+            pass
+            raise Exception('failed to send transaction')
+
+    for job in jobs:
+        redis_conn.publish(f'migrated:{job.account_address}', 'done') # notify all webservice threads to release
+
+
+
 @app.route('/migrate', methods=['POST'])
 def migrate():
     account_address = flask.request.args.get('address', '')
@@ -49,14 +96,15 @@ def migrate():
         if cache.is_migrated(account_address):
             raise MigrationErrors.AlreadyMigratedError(account_address)
         try:
-            migrated_balance = migration.migrate(account_address)
+            action, balance = migration.migrate(account_address)
+            send_job_and_wait(account_address, action, balance)
             cache.set_migrated(account_address)
         except MigrationErrors.AlreadyMigratedError:
             # mark in cache also in cases where migration happened already
             cache.set_migrated(account_address)
             raise  # re-raise error
 
-    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': migrated_balance }), HTTP_STATUS_OK
+    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': balance }), HTTP_STATUS_OK
 
 
 @app.route('/status', methods=['GET'])

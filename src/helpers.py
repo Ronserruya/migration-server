@@ -50,17 +50,18 @@ def has_kin3_account(account_address):
 
 
 def is_burned(account_data: AccountData) -> bool:
-    """Check that an account is burned"""
+    """Check that an account is burned. A zero balance account is also considered burnt."""
     # There are other ways to burn an account, but this is the way we do it
     # Only signer is the master signer, and its weight is 0
     burned_balance = cache.get_burned_balance(account_data.account_id)
     if burned_balance is not None:
         return True
 
-    if len(account_data.signers) != 1 or account_data.signers[0].weight != 0:
+    balance = get_old_balance(account_data)
+    if balance > 0 and (len(account_data.signers) != 1 or account_data.signers[0].weight != 0):
         return False
 
-    cache.set_burned_balance(account_data.account_id, get_old_balance(account_data))
+    cache.set_burned_balance(account_data.account_id, balance)
     return True
 
 

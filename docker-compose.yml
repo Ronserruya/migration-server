@@ -1,20 +1,26 @@
 version: '3'
 
 services:
-    migration-server:
-        image: kinecosystem/migration-server:latest
-        ports:
-          - "8000"
-        environment:
-            MAIN_SEED:
-            PROXY_SALT: ''
-            CHANNEL_COUNT: 5
-            KIN_ISSUER: 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
-            OLD_HORIZON: 'http://horizon-ecosystem.kininfrastructure.com'
-            NEW_HORIZON: 'http://horizon.kinfederation.com'
-            NEW_PASSPHRASE: 'Kin Mainnet ; December 2018'
-            APP_INTERNAL_SERVICE: 'http://marketplace-internal'
-            APP_ID: 'mgsv'
-            STATSD_HOST: 'localhost'
-            STATSD_PORT: 8125
-            DEBUG: 'TRUE'
+  migration-server:
+    image: kinecosystem/migration-server:latest
+    ports:
+      - "8000"
+    environment:
+      MAIN_SEED: 
+      PROXY_SALT: ''
+      CHANNEL_COUNT: 5
+      KIN_ISSUER: 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
+      OLD_HORIZON: 'http://horizon-ecosystem.kininfrastructure.com'
+      NEW_HORIZON: 'http://horizon.kinfederation.com'
+      NEW_PASSPHRASE: 'Kin Mainnet ; December 2018'
+      APP_ID: 'mgsv'
+      STATSD_HOST: 'localhost'
+      STATSD_PORT: 8125
+      DEBUG: 'TRUE'
+      REDIS_CONN: 'redis://redis:6379/0'
+      INTERNAL_SERVICE: 'http://marketplace-internal'
+
+  redis:
+    image: redis:5.0
+    ports:
+      - 6379

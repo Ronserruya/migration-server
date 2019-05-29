@@ -4,27 +4,19 @@ import time
 import logging
 
 import flask
-import requests
 from werkzeug.exceptions import HTTPException
 
-import kin.errors as KinErrors
-from kin.transactions import build_memo
-
 from . import errors as MigrationErrors
-from .init import app, statsd, main_account
-from .config import KIN_ISSUER, DEBUG, PROXY_SALT, APP_INTERNAL_SERVICE
-from .helpers import (get_proxy_address,
-                      get_old_balance,
-                      sign_tx,
-                      build_migration_transaction,
-                      build_create_transaction,
-                      is_burned, get_account_data)
+from .init import app, statsd, main_account, redis_conn, cache
+from .config import KIN_ISSUER, DEBUG
+from .helpers import is_burned, get_kin2_account_data
+from . import migration
+from . import internal_service
 
 logger = logging.getLogger('migration')
 HTTP_STATUS_OK = 200
 HTTP_STATUS_INTERNAL_ERROR = 500
 
-INTERNAL_ADDRESS = f'{ APP_INTERNAL_SERVICE }/v1/internal'
 
 @app.before_request
 def set_start_time():
@@ -35,8 +27,15 @@ def set_start_time():
 @app.route('/accounts/<account_address>/status', methods=['GET'])
 def account_status(account_address):
     logger.info(f'Received an account status request for address: {account_address}')
+
+    if cache.get_burned_balance(account_address) is not None:
+        burned = True
+    else:
+        kin2_account_data = get_kin2_account_data(account_address)
+        burned = is_burned(kin2_account_data)
+
     return flask.jsonify({
-        'is_burned': is_burned(account_address)
+        'is_burned': burned
     }), HTTP_STATUS_OK
 
 
@@ -44,75 +43,22 @@ def account_status(account_address):
 def migrate():
     account_address = flask.request.args.get('address', '')
     logger.info(f'Received migration request for address: {account_address}')
-    # Verify the client's burn
-    if not is_burned(account_address):
-        raise MigrationErrors.AccountNotBurnedError(account_address)
-    logger.info(f'Verified that account {account_address} is burned')
 
-    account_data = get_account_data(account_address)
-
-    # Get the account's old balance
-    old_balance = get_old_balance(account_data, KIN_ISSUER)
-    logger.info(f'Account {account_address} had {old_balance} kin')
-
-    # Generate the keypair for the proxy account
-    proxy_address = get_proxy_address(account_address, PROXY_SALT)
-    logger.info(f'Generated proxy account with address: {proxy_address}')
-
-    # Get tx builder, fee is 0 since we are whitelisted
-    builder = main_account.get_transaction_builder(0)
-
-    # Add the memo manually because use the builder directly
-    builder.add_text_memo(build_memo(main_account.app_id, None))
-
-    # Build tx
-    build_migration_transaction(builder, proxy_address, account_address, old_balance)
-    # Grab an available channel:
-    with main_account.channel_manager.get_channel() as channel:
-        sign_tx(builder, channel, main_account.keypair.secret_seed)
-
-        try:
-            tx_hash = main_account.submit_transaction(builder)
-        except KinErrors.AccountExistsError:
-            # The proxy was already created, so migration already happened
+    with redis_conn.lock(f'migrating:{account_address}', blocking_timeout=30):
+        # will throw LockError when failing to lock within blocking_timeout
+        if cache.is_migrated(account_address):
             raise MigrationErrors.AlreadyMigratedError(account_address)
-        except KinErrors.AccountNotFoundError:
-            # We expect most account to be created, so its better to "ask for forgiveness, not for permission"
-            # The user's account was not pre-created on the new blockchain
-            logger.info(f'Address: {account_address}, was not pre-created, creating now')
-            # Get tx builder, fee is 0 since we are whitelisted
-            builder = main_account.get_transaction_builder(0)
-
-            # Add the memo manually because use the builder directly
-            builder.add_text_memo(build_memo(main_account.app_id, None))
-            build_create_transaction(builder, proxy_address, account_address, old_balance)
-            sign_tx(builder, channel, main_account.keypair.secret_seed)
-            try:
-                tx_hash = main_account.submit_transaction(builder)
-            except KinErrors.AccountExistsError:
-                # Race condition, the client sent two migration requests at once, one of them finished first
-                raise MigrationErrors.AlreadyMigratedError(account_address)
-
-    # If the user had 0 kin, we didn't try to pay him, and might missed that he is not created
-    if old_balance == 0:
         try:
-            main_account.create_account(account_address, starting_balance=old_balance, fee=0)
-            logger.info(f'Address: {account_address}, was not pre-created, created now')
-        except KinErrors.AccountExistsError:
-            pass
+            migrated_balance = migration.migrate(account_address)
+            cache.set_migrated(account_address)
+        except MigrationErrors.AlreadyMigratedError:
+            # mark in cache also in cases where migration happened already
+            cache.set_migrated(account_address)
+            raise  # re-raise error
 
-    logger.info(f'Successfully migrated address: {account_address} with {old_balance} balance, tx: {tx_hash}')
-    statsd.increment('accounts_migrated')
-    if old_balance > 0:
-        statsd.increment('kin_migrated', value=old_balance)
+    internal_service.mark_as_burnt(account_address)
 
-    # calls marketplace-internal for updating wallet with created_date_kin3
-    marking_as_burnt_address = f'{ INTERNAL_ADDRESS }/wallets/{ account_address }/burnt'
-    is_burnt_check_response = requests.put(marking_as_burnt_address)
-    if is_burnt_check_response.status_code != 204:
-        logger.error(f'marking wallet { account_address } as burnt failed with { is_burnt_check_response.status_code }')
-
-    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': old_balance }), HTTP_STATUS_OK
+    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': migrated_balance }), HTTP_STATUS_OK
 
 
 @app.route('/status', methods=['GET'])

@@ -1,11 +1,11 @@
 """Initialization for the migration service"""
 
 import logging
+import uuid
+
 from flask_log_request_id import RequestID, RequestIDLogFilter
 from flask_log_request_id.parser import amazon_elb_trace_id
-
-
-import uuid
+import redis
 
 import kin
 from kin.utils import create_channels
@@ -14,7 +14,7 @@ from flask_cors import CORS
 from datadog import DogStatsd
 
 from . import config
-
+from .caching import Cache
 
 def req_id_generator() -> str:
     """
@@ -61,4 +61,9 @@ logger.info(f'Initialized app with address: {main_account.keypair.public_address
             f'New horizon: {config.NEW_HORIZON}')
 
 
-
+if config.REDIS_CONN == 'fakeredis':
+    import fakeredis
+    redis_conn = fakeredis.FakeRedis()
+else:
+    redis_conn = redis.Redis.from_url(config.REDIS_CONN)
+cache = Cache(redis_conn)

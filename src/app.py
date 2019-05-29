@@ -4,6 +4,7 @@ import time
 import logging
 
 import flask
+import requests
 from werkzeug.exceptions import HTTPException
 
 import kin.errors as KinErrors
@@ -11,7 +12,7 @@ from kin.transactions import build_memo
 
 from . import errors as MigrationErrors
 from .init import app, statsd, main_account
-from .config import KIN_ISSUER, DEBUG, PROXY_SALT
+from .config import KIN_ISSUER, DEBUG, PROXY_SALT, APP_INTERNAL_SERVICE
 from .helpers import (get_proxy_address,
                       get_old_balance,
                       sign_tx,
@@ -23,6 +24,7 @@ logger = logging.getLogger('migration')
 HTTP_STATUS_OK = 200
 HTTP_STATUS_INTERNAL_ERROR = 500
 
+INTERNAL_ADDRESS = f'{ APP_INTERNAL_SERVICE }/v1/internal'
 
 @app.before_request
 def set_start_time():
@@ -103,6 +105,12 @@ def migrate():
     statsd.increment('accounts_migrated')
     if old_balance > 0:
         statsd.increment('kin_migrated', value=old_balance)
+
+    # calls marketplace-internal for updating wallet with created_date_kin3
+    marking_as_burnt_address = f'{ INTERNAL_ADDRESS }/wallets/{ account_address }/burnt'
+    is_burnt_check_response = requests.put(marking_as_burnt_address)
+    if is_burnt_check_response.status_code != 204:
+        logger.error(f'marking wallet { account_address } as burnt failed with { is_burnt_check_response.status_code }')
 
     return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': old_balance }), HTTP_STATUS_OK
 

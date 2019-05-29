@@ -24,7 +24,7 @@ if DEBUG == 'TRUE':
     OLD_HORIZON = 'https://horizon-playground.kininfrastructure.com'
     NEW_HORIZON = 'https://horizon-testnet.kininfrastructure.com'
     NEW_PASSPHRASE = 'Kin Testnet ; December 2018'
-    APP_INTERNAL_SERVICE = 'http://marketplace-internal'
+    INTERNAL_SERVICE = 'http://marketplace-internal'
     APP_ID = ANON_APP_ID
     STATSD_HOST = 'localhost'
     STATSD_PORT = 8125
@@ -38,7 +38,7 @@ else:
     OLD_HORIZON = os.environ['OLD_HORIZON']
     NEW_HORIZON = os.environ['NEW_HORIZON']
     NEW_PASSPHRASE = os.environ['NEW_PASSPHRASE']
-    APP_INTERNAL_SERVICE = os.environ['APP_INTERNAL_SERVICE']
+    INTERNAL_SERVICE = os.environ['APP_INTERNAL_SERVICE']
     APP_ID = os.environ['APP_ID']
     STATSD_HOST = os.environ['STATSD_HOST']
     STATSD_PORT = int(os.environ['STATSD_PORT'])

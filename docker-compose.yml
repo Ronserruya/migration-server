@@ -18,7 +18,7 @@ services:
       STATSD_PORT: 8125
       DEBUG: 'TRUE'
       REDIS_CONN: 'redis://redis:6379/0'
-      APP_INTERNAL_SERVICE: 'http://marketplace-internal'
+      INTERNAL_SERVICE: 'http://marketplace-internal'
 
   redis:
     image: redis:5.0

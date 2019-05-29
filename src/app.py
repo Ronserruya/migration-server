@@ -4,33 +4,19 @@ import time
 import logging
 
 import flask
-import requests
 from werkzeug.exceptions import HTTPException
 
 from . import errors as MigrationErrors
-<<<<<<< HEAD
-from .init import app, statsd, main_account
-from .config import KIN_ISSUER, DEBUG, PROXY_SALT, APP_INTERNAL_SERVICE
-from .helpers import (get_proxy_address,
-                      get_old_balance,
-                      sign_tx,
-                      build_migration_transaction,
-                      build_create_transaction,
-                      is_burned, get_kin2_account_data,
-                      get_kin3_account_data_or_none)
-=======
 from .init import app, statsd, main_account, redis_conn, cache
 from .config import KIN_ISSUER, DEBUG
 from .helpers import is_burned, get_kin2_account_data
 from . import migration
-
->>>>>>> add caching and locking layer
+from . import internal_service
 
 logger = logging.getLogger('migration')
 HTTP_STATUS_OK = 200
 HTTP_STATUS_INTERNAL_ERROR = 500
 
-INTERNAL_ADDRESS = f'{ APP_INTERNAL_SERVICE }/v1/internal'
 
 @app.before_request
 def set_start_time():
@@ -70,11 +56,7 @@ def migrate():
             cache.set_migrated(account_address)
             raise  # re-raise error
 
-    # calls marketplace-internal for updating wallet with created_date_kin3
-    marking_as_burnt_address = f'{ INTERNAL_ADDRESS }/wallets/{ account_address }/burnt'
-    is_burnt_check_response = requests.put(marking_as_burnt_address)
-    if is_burnt_check_response.status_code != 204:
-        logger.error(f'marking wallet { account_address } as burnt failed with { is_burnt_check_response.status_code }')
+    internal_service.mark_as_burnt(account_address)
 
     return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': migrated_balance }), HTTP_STATUS_OK
 

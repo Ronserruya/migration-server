@@ -38,7 +38,7 @@ else:
     OLD_HORIZON = os.environ['OLD_HORIZON']
     NEW_HORIZON = os.environ['NEW_HORIZON']
     NEW_PASSPHRASE = os.environ['NEW_PASSPHRASE']
-    INTERNAL_SERVICE = os.environ['APP_INTERNAL_SERVICE']
+    INTERNAL_SERVICE = os.environ['INTERNAL_SERVICE']
     APP_ID = os.environ['APP_ID']
     STATSD_HOST = os.environ['STATSD_HOST']
     STATSD_PORT = int(os.environ['STATSD_PORT'])

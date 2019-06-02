@@ -51,12 +51,12 @@ def migrate():
         try:
             migrated_balance = migration.migrate(account_address)
             cache.set_migrated(account_address)
+            internal_service.mark_as_burnt(account_address)
         except MigrationErrors.AlreadyMigratedError:
             # mark in cache also in cases where migration happened already
             cache.set_migrated(account_address)
+            internal_service.mark_as_burnt(account_address)
             raise  # re-raise error
-
-    internal_service.mark_as_burnt(account_address)
 
     return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': migrated_balance }), HTTP_STATUS_OK
 

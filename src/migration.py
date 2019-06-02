@@ -1,7 +1,6 @@
 import logging
 
 import kin.errors as KinErrors
-from kin.transactions import build_memo
 from .helpers import (sign_tx,
                       build_migration_transaction,
                       build_create_transaction,
@@ -18,8 +17,7 @@ def migrate_zero_balance(account_address):
     try:
         tx_hash = main_account.create_account(account_address,
                                               starting_balance=0,
-                                              fee=0,
-                                              memo_text=build_memo(main_account.app_id, None))
+                                              fee=0)
         cache.set_has_kin3_account(account_address)
         logger.info(f'Address: {account_address}, was not pre-created, created now with 0 balance')
         return tx_hash
@@ -34,8 +32,7 @@ def migrate_balance(account_address, old_balance):
     try:
         return main_account.send_kin(account_address,
                                      amount=old_balance,
-                                     fee=0,
-                                     memo_text=build_memo(main_account.app_id, None))
+                                     fee=0)
     except KinErrors.AccountNotFoundError:
         return None
 
@@ -47,8 +44,7 @@ def migrate_balance_and_create_account(account_address, old_balance):
     try:
         return main_account.create_account(account_address,
                                            starting_balance=old_balance,
-                                           fee=0,
-                                           memo_text=build_memo(main_account.app_id, None))
+                                           fee=0)
     except KinErrors.AccountExistsError:
         # Race condition, the client sent two migration requests at once, one of them finished first
         raise MigrationErrors.AlreadyMigratedError(account_address)

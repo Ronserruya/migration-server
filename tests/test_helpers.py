@@ -49,7 +49,7 @@ def test_migrate_zero_without_account():
         with patch('src.migration.has_kin3_account', lambda x: False):
             with patch('src.migration.main_account.create_account') as create_account:
                 assert 0 == migrate(account)
-                create_account.assert_called_with(account, fee=0, starting_balance=0, memo_text='1-anon-')
+                create_account.assert_called_with(account, fee=0, starting_balance=0)
 
 
 def test_migrate_non_zero_with_account():

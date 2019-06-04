@@ -10,8 +10,8 @@ WORKDIR /opt/app
 COPY Pipfile* ./
 
 # Install dependencies
-RUN pip install pipenv==2018.10.13 \
-    &&  pipenv install
+RUN pip install pipenv==2018.11.26
+RUN pipenv install
 
 # Copy the code
 COPY . .

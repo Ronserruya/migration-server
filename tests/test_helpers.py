@@ -1,3 +1,4 @@
+import os
 import pytest
 from unittest.mock import patch
 import json
@@ -5,6 +6,7 @@ from kin.blockchain.horizon_models import AccountData
 from kin_base.operation import CreateAccount, Payment
 from kin import Keypair
 
+os.environ['UNITTEST'] = 'True'
 
 def gen_address():
     return Keypair(Keypair.generate_seed()).public_address

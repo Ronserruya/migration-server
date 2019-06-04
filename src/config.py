@@ -18,7 +18,7 @@ DEBUG = os.environ.get('DEBUG', 'TRUE')
 if DEBUG == 'TRUE':
     MAIN_SEED = 'SDO3BNCOUDHYLUT5FQ537PZZUPBTMSTRCQOCDJE3XF22LP7DPIUP2SDF'
     PROXY_SALT = 'pizza'
-    CHANNEL_SALT = f'local:{os.getpid()}'
+    CHANNEL_SALT = 'local' if os.environ.get('UNITTEST') else f'local:{os.getpid()}'
     CHANNEL_COUNT = 10
     KIN_ISSUER = 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
     OLD_HORIZON = 'https://horizon-playground.kininfrastructure.com'

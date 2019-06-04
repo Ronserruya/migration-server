@@ -12,7 +12,6 @@ flask-log-request-id = "==0.10.0"
 gunicorn = "==19.9.0"
 redis = "*"
 gevent = "*"
-six = "==1.12"
 
 [dev-packages]
 pytest = "*"

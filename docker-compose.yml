@@ -4,19 +4,20 @@ services:
   migration-server:
     image: kinecosystem/migration-server:latest
     ports:
-      - "8000"
+      - "9999:8000"
     environment:
-      MAIN_SEED: 
-      PROXY_SALT: ''
-      CHANNEL_COUNT: 5
+      MAIN_SEED: ''
+      PROXY_SALT: 'pizza'
+      CHANNEL_COUNT: 1000
+      CHANNEL_SALT: 'local'
       KIN_ISSUER: 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
-      OLD_HORIZON: 'http://horizon-ecosystem.kininfrastructure.com'
-      NEW_HORIZON: 'http://horizon.kinfederation.com'
-      NEW_PASSPHRASE: 'Kin Mainnet ; December 2018'
+      OLD_HORIZON: 'https://horizon-playground.kininfrastructure.com'
+      NEW_HORIZON: 'https://horizon-testnet.kininfrastructure.com'
+      NEW_PASSPHRASE: 'Kin Testnet ; December 2018'
       APP_ID: 'mgsv'
       STATSD_HOST: 'localhost'
       STATSD_PORT: 8125
-      DEBUG: 'TRUE'
+      DEBUG: 'True'
       REDIS_CONN: 'redis://redis:6379/0'
       INTERNAL_SERVICE: 'http://marketplace-internal'
 

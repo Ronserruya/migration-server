@@ -12,14 +12,14 @@ def get_instance_id() -> str:
     return r.text
 
 
-DEBUG = os.environ.get('DEBUG', 'TRUE')
+DEBUG = os.environ.get('DEBUG', 'TRUE').upper()
 
 # Can get bool from env variable, need to check the string
 if DEBUG == 'TRUE':
     MAIN_SEED = 'SDO3BNCOUDHYLUT5FQ537PZZUPBTMSTRCQOCDJE3XF22LP7DPIUP2SDF'
     PROXY_SALT = 'pizza'
-    CHANNEL_SALT = 'local' if os.environ.get('UNITTEST') else f'local:{os.getpid()}'
-    CHANNEL_COUNT = 10
+    CHANNEL_SALT = 'local' if os.environ.get('UNITTEST') else f'local:{os.getpid()}' # add pid to create different salt per process
+    CHANNEL_COUNT = int(os.environ.get('CHANNEL_COUNT', 10))
     KIN_ISSUER = 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
     OLD_HORIZON = 'https://horizon-playground.kininfrastructure.com'
     NEW_HORIZON = 'https://horizon-testnet.kininfrastructure.com'
@@ -32,7 +32,7 @@ if DEBUG == 'TRUE':
 else:
     MAIN_SEED = os.environ['MAIN_SEED']
     PROXY_SALT = os.environ['PROXY_SALT']
-    CHANNEL_SALT = f'{get_instance_id()}:{os.getpid()}'
+    CHANNEL_SALT = f'{get_instance_id()}:{os.getpid()}' # add pid to create different salt per process
     CHANNEL_COUNT = int(os.environ['CHANNEL_COUNT'])
     KIN_ISSUER = os.environ['KIN_ISSUER']
     OLD_HORIZON = os.environ['OLD_HORIZON']

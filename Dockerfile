@@ -17,4 +17,4 @@ RUN pipenv install
 COPY . .
 
 # Run with gunicorn thread workers (2 x $num_cores) + 1 according to gunicorn docs recommendation
-CMD pipenv run gunicorn --worker-class=gevent --worker-connections=1000 --workers=$(expr 2 \* $(nproc) + 1) -b 0.0.0.0:8000 src.app:app
+CMD pipenv run gunicorn --worker-class=gevent --worker-connections=1000 --workers=3 --timeout=120 -b 0.0.0.0:8000 src.app:app

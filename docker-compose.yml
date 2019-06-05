@@ -8,7 +8,7 @@ services:
     environment:
       MAIN_SEED: ''
       PROXY_SALT: 'pizza'
-      CHANNEL_COUNT: 1000
+      CHANNEL_COUNT: 20
       CHANNEL_SALT: 'local'
       KIN_ISSUER: 'GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7'
       OLD_HORIZON: 'https://horizon-playground.kininfrastructure.com'
@@ -17,7 +17,7 @@ services:
       APP_ID: 'mgsv'
       STATSD_HOST: 'localhost'
       STATSD_PORT: 8125
-      DEBUG: 'True'
+      DEBUG: 'TRUE'
       REDIS_CONN: 'redis://redis:6379/0'
       INTERNAL_SERVICE: 'http://marketplace-internal'
 
@@ -25,3 +25,9 @@ services:
     image: redis:5.0
     ports:
       - 6379
+
+  redis-cli:
+    image: redis:5.0
+    links:
+      - redis
+    entrypoint: redis-cli -h redis -p 6379

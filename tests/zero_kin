@@ -50,6 +50,13 @@
     {
       "balance": "100.0000000",
       "asset_type": "native"
+    },
+    {
+      "balance": "0.0000000",
+      "limit": "922337203685.4775807",
+      "asset_type": "credit_alphanum4",
+      "asset_code": "KIN",
+      "asset_issuer": "GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7"
     }
   ],
   "signers": [

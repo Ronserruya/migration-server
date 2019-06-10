@@ -1,11 +1,11 @@
 """Initialization for the migration service"""
-
+import os
 import logging
+import uuid
+
 from flask_log_request_id import RequestID, RequestIDLogFilter
 from flask_log_request_id.parser import amazon_elb_trace_id
-
-
-import uuid
+import redis
 
 import kin
 from kin.utils import create_channels
@@ -13,8 +13,8 @@ import flask
 from flask_cors import CORS
 from datadog import DogStatsd
 
-import config
-
+from . import config
+from .caching import Cache
 
 def req_id_generator() -> str:
     """
@@ -53,12 +53,28 @@ new_env = kin.Environment('NEW', config.NEW_HORIZON, config.NEW_PASSPHRASE)
 old_client = kin.KinClient(old_env)
 new_client = kin.KinClient(new_env)
 
-channels = create_channels(config.MAIN_SEED, new_env, config.CHANNEL_COUNT, 0, config.CHANNEL_SALT)
-main_account = new_client.kin_account(config.MAIN_SEED, channels, app_id=config.APP_ID)
+if config.REDIS_CONN == 'fakeredis':
+    import fakeredis
+    redis_conn = fakeredis.FakeRedis()
+else:
+    redis_conn = redis.Redis.from_url(config.REDIS_CONN)
+cache = Cache(redis_conn)
 
+# we lock on a shared key for all migration instances because creating channels
+## causes a race condition on the main seed's sequence
+for i in range(5):
+    try:
+        with redis_conn.lock('create_channels', timeout=120, blocking_timeout=120):
+            logger.info('creating %s channels on pid %s' % (config.CHANNEL_COUNT, os.getpid()))
+            channels = create_channels(config.MAIN_SEED, new_env, config.CHANNEL_COUNT, 0, config.CHANNEL_SALT)
+        logger.info('created %s channels on pid %s' % (config.CHANNEL_COUNT, os.getpid()))
+        break
+    except Exception as e:
+        logger.warn('retrying create_channels: %s on %s' % (e, os.getpid()))
+else:
+    raise Exception('failed creating channels on %s' % os.getpid())
+
+main_account = new_client.kin_account(config.MAIN_SEED, channels, app_id=config.APP_ID)
 logger.info(f'Initialized app with address: {main_account.keypair.public_address}, '
             f'Old horizon: {config.OLD_HORIZON}, '
             f'New horizon: {config.NEW_HORIZON}')
-
-
-

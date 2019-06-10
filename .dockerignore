@@ -1,0 +1,7 @@
+Makefile
+docker-compose.yml
+Dockerfile
+tests/
+.git*
+.tags
+.travis.yml

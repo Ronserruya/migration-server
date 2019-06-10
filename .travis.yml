@@ -7,10 +7,8 @@ cache:
   - pip
 
 install:
-  - pip install kin-sdk==2.2.3
-
-before_script: 
-  - cd scripts
+  - pip install -U pip pipenv
+  - pipenv install -d
 
 script:
-  - python -m pytest -v -rs -s -x --fulltrace --disable-warnings tests
+  - make test

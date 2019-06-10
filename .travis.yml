@@ -7,7 +7,7 @@ cache:
   - pip
 
 install:
-  - pip install pip pipenv
+  - pip install -U pip pipenv
   - pipenv install -d
 
 script:

@@ -44,7 +44,7 @@ def migrate():
     account_address = flask.request.args.get('address', '')
     logger.info(f'Received migration request for address: {account_address}')
 
-    with redis_conn.lock(f'migrating:{account_address}', blocking_timeout=30):
+    with redis_conn.lock(f'migrating:{account_address}', blocking_timeout=30, timeout=45):
         # will throw LockError when failing to lock within blocking_timeout
         if cache.is_migrated(account_address):
             raise MigrationErrors.AlreadyMigratedError(account_address)

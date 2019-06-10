@@ -1,3 +1,4 @@
+import os
 import pytest
 from unittest.mock import patch
 import json
@@ -5,6 +6,7 @@ from kin.blockchain.horizon_models import AccountData
 from kin_base.operation import CreateAccount, Payment
 from kin import Keypair
 
+os.environ['UNITTEST'] = 'True'
 
 def gen_address():
     return Keypair(Keypair.generate_seed()).public_address
@@ -49,7 +51,7 @@ def test_migrate_zero_without_account():
         with patch('src.migration.has_kin3_account', lambda x: False):
             with patch('src.migration.main_account.create_account') as create_account:
                 assert 0 == migrate(account)
-                create_account.assert_called_with(account, fee=0, starting_balance=0, memo_text='1-anon-')
+                create_account.assert_called_with(account, fee=0, starting_balance=0)
 
 
 def test_migrate_non_zero_with_account():

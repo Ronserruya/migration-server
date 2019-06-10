@@ -11,12 +11,12 @@ datadog = "==0.26.0"
 flask-log-request-id = "==0.10.0"
 gunicorn = "==19.9.0"
 redis = "*"
+gevent = "*"
 
 [dev-packages]
 pytest = "*"
-fakeredis = "*"
+fakeredis = {extras = ["lua"],version = "==0.16.0"}
 ipython = "*"
-six = "==1.12"
 
 [requires]
 python_version = "3.7"

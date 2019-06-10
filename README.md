@@ -6,6 +6,9 @@ A server that is used to migrate a user from the old kin blockchain to the new o
 * docker-compose
 * (optional) datadog-agent to report metrics to
 
+
+** NOTE: there is an issue with six. One of the deps requires six==1.11 which conflicts with another dep that needs six>=1.12. My solution is to install the deps and then remove six completely from the `Pipfile.lock`.
+
 ## Configuration
 The server can be configured from the docker-compose.yml file
 

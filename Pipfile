@@ -15,7 +15,7 @@ gevent = "*"
 
 [dev-packages]
 pytest = "*"
-fakeredis = "*"
+fakeredis = {extras = ["lua"],version = "*"}
 ipython = "*"
 six = "==1.12"
 

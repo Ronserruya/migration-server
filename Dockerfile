@@ -12,7 +12,6 @@ COPY Pipfile* ./
 # Install dependencies
 RUN pip install pipenv==2018.11.26
 RUN pipenv install
-RUN pipenv install six==1.12 --skip-lock
 
 # Copy the code
 COPY . .

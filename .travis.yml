@@ -10,6 +10,7 @@ install:
   - pip install -U pip pipenv
   - pipenv install -v -d --skip-lock
   - pipenv install -v six==1.12 --skip-lock
+  - pipenv run pip freeze
 
 script:
   - make test

@@ -68,7 +68,7 @@ def migrate():
 
 
 
-    return flask.jsonify({'code': '404', 'message': 'OK', 'balance': migrated_balance }), 404
+    return flask.jsonify({'code': 4101, 'message': 'OK', 'balance': migrated_balance }), 410
 
 
 @app.route('/status', methods=['GET'])

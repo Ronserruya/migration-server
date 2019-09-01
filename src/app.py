@@ -60,17 +60,7 @@ def migrate():
     #         internal_service.mark_as_burnt(account_address)
     #         raise  # re-raise error
 
-
-
-
-
-
-
-
-
-
-
-    return flask.jsonify({'code': 4101, 'message': 'OK', 'balance': 'migrated_balance' }), 410
+    return flask.jsonify({'code': 200, 'message': 'OK', 'balance': 'migrated_balance' }), 200
 
 
 @app.route('/status', methods=['GET'])

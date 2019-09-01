@@ -58,6 +58,16 @@ def migrate():
     #         internal_service.mark_as_burnt(account_address)
     #         raise  # re-raise error
 
+
+
+
+
+
+
+
+
+
+
     return flask.jsonify({'code': '404', 'message': 'OK', 'balance': migrated_balance }), 404
 
 

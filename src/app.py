@@ -44,21 +44,21 @@ def migrate():
     account_address = flask.request.args.get('address', '')
     logger.info(f'Received migration request for address: {account_address}')
 
-    with redis_conn.lock(f'migrating:{account_address}', blocking_timeout=30, timeout=45):
-        # will throw LockError when failing to lock within blocking_timeout
-        if cache.is_migrated(account_address):
-            raise MigrationErrors.AlreadyMigratedError(account_address)
-        try:
-            migrated_balance = migration.migrate(account_address)
-            cache.set_migrated(account_address)
-            internal_service.mark_as_burnt(account_address)
-        except MigrationErrors.AlreadyMigratedError:
-            # mark in cache also in cases where migration happened already
-            cache.set_migrated(account_address)
-            internal_service.mark_as_burnt(account_address)
-            raise  # re-raise error
+    # with redis_conn.lock(f'migrating:{account_address}', blocking_timeout=30, timeout=45):
+    #     # will throw LockError when failing to lock within blocking_timeout
+    #     if cache.is_migrated(account_address):
+    #         raise MigrationErrors.AlreadyMigratedError(account_address)
+    #     try:
+    #         migrated_balance = migration.migrate(account_address)
+    #         cache.set_migrated(account_address)
+    #         internal_service.mark_as_burnt(account_address)
+    #     except MigrationErrors.AlreadyMigratedError:
+    #         # mark in cache also in cases where migration happened already
+    #         cache.set_migrated(account_address)
+    #         internal_service.mark_as_burnt(account_address)
+    #         raise  # re-raise error
 
-    return flask.jsonify({'code': HTTP_STATUS_OK, 'message': 'OK', 'balance': migrated_balance }), HTTP_STATUS_OK
+    return flask.jsonify({'code': '404', 'message': 'OK', 'balance': migrated_balance }), 404
 
 
 @app.route('/status', methods=['GET'])

@@ -4,6 +4,7 @@ import time
 import logging
 
 import flask
+from flask import request
 from werkzeug.exceptions import HTTPException
 
 from . import errors as MigrationErrors
@@ -43,6 +44,7 @@ def account_status(account_address):
 def migrate():
     account_address = flask.request.args.get('address', '')
     logger.info(f'Received migration request for address: {account_address}')
+    logger.info(f'User agent: {request.headers.get('User-Agent')}')
 
     # with redis_conn.lock(f'migrating:{account_address}', blocking_timeout=30, timeout=45):
     #     # will throw LockError when failing to lock within blocking_timeout

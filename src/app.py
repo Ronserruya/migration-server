@@ -70,7 +70,7 @@ def migrate():
 
 
 
-    return flask.jsonify({'code': 200, 'message': 'OK', 'balance': 'migrated_balance' }), 200
+    return flask.jsonify({'code': 4101, 'message': 'OK', 'balance': 'migrated_balance' }), 410
 
 
 @app.route('/status', methods=['GET'])
